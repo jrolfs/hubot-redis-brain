@@ -91,4 +91,4 @@ module.exports = (robot) ->
   robot.respond /brain usage/i, (msg) ->
     info = client.server_info
 
-    msg.send info.used_memory / info.used_memory_peak
+    msg.send "{info.used_memory / info.used_memory_peak * 100}%"
