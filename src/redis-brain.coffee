@@ -7,7 +7,8 @@
 #   If not provided, '<brain_prefix>' will default to 'hubot'.
 #
 # Commands:
-#   None
+#   brain limit - Returns available storage space on Redis instance
+#   brain limit human - Returns available storage space on Redis instance in human readable format
 
 Url   = require "url"
 Redis = require "redis"
@@ -76,3 +77,18 @@ module.exports = (robot) ->
 
   robot.brain.on 'close', ->
     client.quit()
+
+  robot.respond /(brain limit)( human)?/i, (msg) ->
+    key = 'used_memory_peak'
+    human = msg.match[2] == ' human'
+    key += '_human' if human
+    size = client.server_info[key]
+
+    response = "hubot-redis-brain: my memory is limited to #{size}#{if human then '' else 'B'}"
+
+    msg.send response
+
+  robot.respond /brain usage/i, (msg) ->
+    info = client.server_info
+
+    msg.send info.used_memory / info.used_memory_peak
